@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1d2a22">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="TikTok Pet">
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<style>html{background:#1d2a22;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>TikTok Pet</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Layout concept: one phone-width column styled as a ranch noticeboard. Farm stage on top, goal tracks and vitals on wood panels, feed tray at the thumb. */
+:root{
+  --bg:#1d2a22;
+  --wood:#6a4528;
+  --wood-dark:#3b2716;
+  --cream:#fff1d0;
+  --dim:#d9c49a;
+  --ink:#1a130c;
+  --grass:#5cbc5a;
+  --coral:#ff8a6b;
+  --gold:#ffd447;
+  --belly:#ff9f43;
+  --joy:#ff6b8b;
+  --health:#4ade80;
+  --hype:#ffd447;
+  --views:#4aa3ff;
+  --follows:#ff8a6b;
+  --f-display:'Silkscreen',ui-monospace,Menlo,Consolas,monospace;
+  --f-body:'Pixelify Sans',ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--cream);font-family:var(--f-body);font-size:15px;line-height:1.35;-webkit-tap-highlight-color:transparent}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;touch-action:manipulation}
+button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.app{max-width:480px;margin:0 auto;display:flex;flex-direction:column;gap:12px;padding-block:12px 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{display:flex;align-items:center;gap:8px;min-width:0}
+.logo{font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.06em;color:var(--gold);text-shadow:2px 2px 0 var(--ink);white-space:nowrap}
+.chip{font-family:var(--f-display);font-size:10px;padding:3px 6px;background:var(--wood-dark);border:2px solid var(--ink);max-width:11ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ctrls{display:flex;gap:6px;flex:none}
+.mini{font-family:var(--f-display);font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:var(--wood);border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink);padding:6px 9px;min-height:32px}
+.mini:active{transform:translateY(3px);box-shadow:none}
+
+.day{display:flex;flex-direction:column;gap:5px}
+.dayrow{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-display);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.dayrow span:last-child{color:var(--gold)}
+.daybar{position:relative;height:12px;border:3px solid var(--ink);background:var(--wood-dark)}
+.daybar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--grass)}
+.daybar::after{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,transparent 0,transparent calc(100%/30 - 1px),rgba(0,0,0,.5) calc(100%/30 - 1px),rgba(0,0,0,.5) calc(100%/30))}
+
+.stage{position:relative;border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);background:#7ec8e8;line-height:0;overflow:hidden}
+.stage canvas{display:block;width:100%;height:auto;aspect-ratio:4/3;image-rendering:pixelated}
+.status{position:absolute;left:8px;top:8px;display:flex;align-items:center;gap:6px;max-width:calc(100% - 16px);padding:4px 8px;background:rgba(20,14,8,.78);border:2px solid var(--ink);font-family:var(--f-display);font-size:10px;letter-spacing:.04em;line-height:1.3;color:var(--cream)}
+.status b{width:8px;height:8px;flex:none;background:var(--gold)}
+.status.bad b{background:#ff5a5a}
+.status.sad b{background:var(--joy)}
+.status.good b{background:var(--health)}
+.banner{position:absolute;left:50%;top:44px;transform:translateX(-50%);max-width:calc(100% - 24px);padding:6px 10px;background:var(--gold);color:var(--ink);border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink);font-family:var(--f-display);font-size:11px;font-weight:700;letter-spacing:.04em;text-align:center;line-height:1.3}
+.banner.bad{background:#ff6b6b}
+.banner.good{background:var(--health)}
+.boost{position:absolute;right:8px;top:8px;padding:4px 7px;background:var(--gold);color:var(--ink);border:2px solid var(--ink);font-family:var(--f-display);font-size:10px;font-weight:700;line-height:1.3}
+.paused{position:absolute;inset:0;display:grid;place-items:center;background:rgba(10,12,18,.5);font-family:var(--f-display);font-size:22px;letter-spacing:.2em;color:var(--cream);text-shadow:3px 3px 0 var(--ink)}
+.pops{position:absolute;inset:0;pointer-events:none}
+.pop{position:absolute;transform:translate(-50%,0);font-family:var(--f-display);font-weight:700;font-size:12px;line-height:1.2;white-space:nowrap;color:var(--cream);text-shadow:2px 0 0 var(--ink),-2px 0 0 var(--ink),0 2px 0 var(--ink),0 -2px 0 var(--ink);animation:rise 1.5s ease-out forwards}
+.pop.v{color:#8cc8ff}.pop.f{color:#ffb299}.pop.l{color:#ff8fa8}.pop.c{color:#bdf5cf}.pop.s{color:var(--gold)}.pop.bad{color:#ff7a7a}.pop.dim{color:var(--dim)}
+@keyframes rise{0%{opacity:0;margin-top:6px}12%{opacity:1}100%{opacity:0;margin-top:-34px}}
+
+.panel{background:var(--wood);background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.09) 0,rgba(0,0,0,.09) 2px,transparent 2px,transparent 16px);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);padding:12px}
+.goals{display:flex;flex-direction:column;gap:12px}
+.goalhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:5px}
+.lab{font-family:var(--f-display);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.val{font-family:var(--f-display);font-size:11px;color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+.val b{font-size:19px;color:var(--cream);margin-right:4px}
+.track{position:relative;height:18px;border:3px solid var(--ink);background:var(--wood-dark)}
+.track i{position:absolute;inset:0 auto 0 0;width:0}
+.track.v i{background:var(--views)}
+.track.f i{background:var(--follows)}
+.track u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.9}
+.next{margin-top:5px;font-size:13px;color:var(--dim)}
+
+.vitals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.vital{min-width:0}
+.vlab{font-family:var(--f-display);font-size:9px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;white-space:nowrap}
+.vbar{height:12px;border:3px solid var(--ink);background:var(--wood-dark);position:relative}
+.vbar i{position:absolute;inset:0 auto 0 0;width:0}
+.vbar.low{animation:blink .7s steps(2) infinite}
+@keyframes blink{50%{border-color:#ff5a5a}}
+
+.feed{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.food{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:84px;padding:8px 2px 6px;background:var(--wood);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);overflow:hidden}
+.food:active:not(.cooling){transform:translateY(4px);box-shadow:none}
+.food .fn{font-size:12px;font-weight:600;line-height:1.1;position:relative}
+.food .ff{font-family:var(--f-display);font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);position:relative}
+.food .ico{position:relative;width:36px;height:27px;image-rendering:pixelated}
+.food .cd{position:absolute;inset:auto 0 0 0;height:var(--cd,0%);background:rgba(10,8,4,.62)}
+.food.cooling{filter:saturate(.6)}
+.hint{margin:0;font-size:13px;color:var(--dim);text-align:center}
+
+.modal{position:fixed;inset:0;z-index:20;display:grid;place-items:center;overflow:auto;background:rgba(12,18,14,.86);padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet{width:100%;max-width:440px;max-height:100%;overflow:auto;background:var(--wood);background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.09) 0,rgba(0,0,0,.09) 2px,transparent 2px,transparent 16px);border:3px solid var(--ink);box-shadow:0 6px 0 var(--ink);padding:18px;display:flex;flex-direction:column;gap:14px}
+.sheet h1{margin:0;font-family:var(--f-display);font-size:26px;letter-spacing:.04em;color:var(--gold);text-shadow:3px 3px 0 var(--ink);line-height:1.1;text-wrap:balance}
+.sheet h2{margin:0;font-family:var(--f-display);font-size:18px;letter-spacing:.04em;color:var(--gold);text-shadow:2px 2px 0 var(--ink);line-height:1.15;text-wrap:balance}
+.sheet p{margin:0;max-width:65ch}
+.goalline{padding:8px 10px;background:var(--wood-dark);border:2px solid var(--ink);font-size:14px}
+.goalline b{color:var(--gold);font-weight:700}
+.rules{display:flex;flex-direction:column;gap:6px}
+.rule{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:10px;padding:5px 8px;background:rgba(0,0,0,.2);border:2px solid var(--ink)}
+.rule canvas{width:24px;height:18px;image-rendering:pixelated}
+.rule span:last-child{font-family:var(--f-display);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);text-align:right}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-family:var(--f-display);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.field input{width:100%;padding:10px;background:var(--cream);color:var(--ink);border:3px solid var(--ink);font-size:17px;font-weight:600}
+.big{font-family:var(--f-display);font-weight:700;font-size:14px;letter-spacing:.06em;text-transform:uppercase;padding:13px 14px;background:var(--grass);color:var(--ink);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink)}
+.big:active{transform:translateY(4px);box-shadow:none}
+.best{font-size:13px;color:var(--dim)}
+.result{display:flex;gap:14px;align-items:center}
+.result canvas{flex:none;width:96px;height:112px;image-rendering:pixelated;background:linear-gradient(#9ad6ee 0 70%,#64b95b 70%);border:3px solid var(--ink)}
+.result .txt{display:flex;flex-direction:column;gap:6px;min-width:0}
+.final{display:flex;flex-direction:column;gap:10px}
+.final .track{height:14px}
+.small{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;font-size:13px;color:var(--dim)}
+.small b{display:block;font-family:var(--f-display);font-size:13px;color:var(--cream);font-variant-numeric:tabular-nums}
+
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.segb{font-family:var(--f-display);font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:10px 6px;background:var(--wood-dark);border:3px solid var(--ink);color:var(--dim)}
+.segb[aria-checked="true"]{background:var(--gold);color:var(--ink)}
+.modehint{margin:0;font-size:13px;color:var(--dim)}
+.director{display:flex;flex-direction:column;gap:8px}
+.nextday{width:100%}
+.nextday:disabled,.evbtn:disabled{opacity:.5}
+.evrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.evbtn{font-family:var(--f-display);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:10px 6px;background:var(--wood);border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink)}
+.evbtn:active:not(:disabled){transform:translateY(3px);box-shadow:none}
+.food .left{position:absolute;top:3px;right:4px;min-width:18px;padding:1px 4px;background:var(--ink);color:var(--gold);font-family:var(--f-display);font-size:10px;text-align:center;line-height:1.3}
+.recap{position:absolute;inset:0;display:grid;place-items:center;background:rgba(14,20,40,.84)}
+.recapin{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;text-align:center;line-height:1.3}
+.recapin .rd{font-family:var(--f-display);font-weight:700;font-size:30px;letter-spacing:.08em;color:var(--gold);text-shadow:3px 3px 0 var(--ink)}
+.recapin .rl{font-family:var(--f-display);font-size:12px;color:var(--cream);letter-spacing:.04em}
+.recapin .rm{font-size:14px;color:var(--dim)}
+.track.l i{background:var(--joy)}
+.hatch{display:flex;flex-direction:column;gap:10px}
+.hrow{display:grid;grid-template-columns:52px minmax(0,1fr) 54px;align-items:center;gap:8px}
+.hrow .track{height:14px}
+.hrow .val{text-align:right}
+.foodwrap{display:flex;flex-direction:column;gap:6px;min-width:0}
+.foodwrap .food{flex:1 1 auto}
+.amt{display:flex;align-items:center;justify-content:center;min-height:36px;padding:0 2px;background:var(--cream);color:var(--ink);border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink);font-family:var(--f-display);font-weight:700;font-size:10px;letter-spacing:.02em;white-space:nowrap;overflow:hidden;cursor:text}
+.amt:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.amt.editing{background:#fff;border-color:var(--gold)}
+.amtin{width:100%;min-width:0;border:0;background:transparent;color:var(--ink);font:inherit;text-align:center;padding:6px 0;outline:none;-moz-appearance:textfield;appearance:textfield}
+.amtin::-webkit-outer-spin-button,.amtin::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.amtin::placeholder{color:#8a7a5c}
+@media (prefers-reduced-motion:reduce){.pop{animation:fade 1.5s linear forwards}.vbar.low{animation:none;border-color:#ff5a5a}@keyframes fade{0%,70%{opacity:1}100%{opacity:0}}}
+@media (max-width:370px){.food .fn{font-size:11px}.logo{font-size:13px}}
+</style>
+
+</head><body>
+<main class="app">
+  <header class="top">
+    <div class="brand"><span class="logo">TIKTOK PET</span><span class="chip" id="nameChip">Pip</span></div>
+    <div class="ctrls"><button class="mini" id="btnSpeed" type="button" aria-label="Game speed">1×</button><button class="mini" id="btnPause" type="button">Pause</button></div>
+  </header>
+
+  <section class="day" aria-label="Lifespan">
+    <div class="dayrow"><span id="dayLabel">Day 1 / 30</span><span id="stageLabel">Lurker</span></div>
+    <div class="daybar"><i id="dayFill"></i></div>
+  </section>
+
+  <section class="stage" aria-label="The farm">
+    <canvas id="farm" width="240" height="180"></canvas>
+    <div class="pops" id="pops"></div>
+    <div class="status" id="status" aria-live="polite"><b></b><span id="statusText">Hatching soon</span></div>
+    <div class="boost" id="boostTag" hidden>Algorithm boost ×1.5</div>
+    <div class="banner" id="banner" hidden></div>
+    <div class="paused" id="pausedTag" hidden>PAUSED</div>
+    <div class="recap" id="recap" hidden><div class="recapin"><div class="rd" id="recapDay"></div><div class="rl" id="recapGain"></div><div class="rm" id="recapMood"></div></div></div>
+  </section>
+
+  <section class="panel hatch" id="hatchBox" hidden aria-label="Hatching">
+    <div class="goalhead"><span class="lab">Hatch the egg</span><span class="val">50 views and 50 likes</span></div>
+    <div class="hrow"><span class="lab">Views</span><div class="track v"><i id="hvFill"></i></div><span class="val" id="hvNum">0/50</span></div>
+    <div class="hrow"><span class="lab">Likes</span><div class="track l"><i id="hlFill"></i></div><span class="val" id="hlNum">0/50</span></div>
+  </section>
+
+  <section class="panel goals" aria-label="Creator goals">
+    <div>
+      <div class="goalhead"><span class="lab">Views</span><span class="val"><b id="vNow">0</b>/ 100,000</span></div>
+      <div class="track v"><i id="vFill"></i></div>
+    </div>
+    <div>
+      <div class="goalhead"><span class="lab">Followers</span><span class="val"><b id="fNow">0</b>/ 10,000</span></div>
+      <div class="track f"><i id="fFill"></i><u style="left:5%" title="Poster"></u><u style="left:25%" title="Rising"></u><u style="left:60%" title="Trending"></u></div>
+      <div class="next" id="fNext">Next evolution: Poster at 500 followers</div>
+    </div>
+  </section>
+
+  <section class="panel vitals" id="vitalsBox" aria-label="Pet needs">
+    <div class="vital"><div class="vlab">Belly</div><div class="vbar" id="vbBelly"><i style="background:var(--belly)"></i></div></div>
+    <div class="vital"><div class="vlab">Joy</div><div class="vbar" id="vbJoy"><i style="background:var(--joy)"></i></div></div>
+    <div class="vital"><div class="vlab">Health</div><div class="vbar" id="vbHealth"><i style="background:var(--health)"></i></div></div>
+    <div class="vital"><div class="vlab">Hype</div><div class="vbar" id="vbHype"><i style="background:var(--hype)"></i></div></div>
+  </section>
+
+  <section class="feed" aria-label="Feed your pet" id="feed"></section>
+  <section class="director" id="directorBox" aria-label="Director controls">
+    <button class="big nextday" id="btnNext" type="button">Next day</button>
+    <div class="evrow"><button class="evbtn" id="btnTroll" type="button">Troll comment</button><button class="evbtn" id="btnBoost" type="button">Boost (3)</button></div>
+  </section>
+  <p class="hint" id="hint">Tap a food to feed.</p>
+</main>
+
+<div class="modal" id="startModal">
+  <div class="sheet" role="dialog" aria-labelledby="startTitle">
+    <h1 id="startTitle">TikTok Pet</h1>
+    <p>Raise a creature for 30 days. It eats views, follows, likes, comments and shares. It starts as an egg that hatches at 50 views and 50 likes.</p>
+    <p class="goalline">Goal: reach <b>10,000 followers</b> and <b>100,000 views</b> before day 30 to turn your pet into a Creator.</p>
+    <div class="rules" id="rules"></div>
+    <div class="field"><span class="lab" id="modeLab">Mode</span><div class="seg" role="radiogroup" aria-labelledby="modeLab"><button class="segb" type="button" role="radio" aria-checked="true" data-mode="director">Director</button><button class="segb" type="button" role="radio" aria-checked="false" data-mode="live">Real-time</button></div><p class="modehint" id="modeHint"></p></div>
+    <div class="field"><label for="petName">Name your pet</label><input id="petName" maxlength="12" value="Pip" autocomplete="off"></div>
+    <button class="big" id="btnStart" type="button">Hatch your pet</button>
+    <div class="best" id="bestLine" hidden></div>
+  </div>
+</div>
+
+<div class="modal" id="endModal" hidden>
+  <div class="sheet" role="dialog" aria-labelledby="endTitle">
+    <div class="result"><canvas id="endPet" width="24" height="28"></canvas><div class="txt"><h2 id="endTitle">Creator</h2><p id="endText"></p></div></div>
+    <div class="final">
+      <div><div class="goalhead"><span class="lab">Views</span><span class="val"><b id="eV">0</b><span id="ePV"></span></span></div><div class="track v"><i id="eVF"></i></div></div>
+      <div><div class="goalhead"><span class="lab">Followers</span><span class="val"><b id="eF">0</b><span id="ePF"></span></span></div><div class="track f"><i id="eFF"></i></div></div>
+    </div>
+    <div class="small"><div><b id="eL">0</b>likes</div><div><b id="eC">0</b>comments</div><div><b id="eS">0</b>shares</div><div><b id="eD">0</b>days</div></div>
+    <div class="best" id="endBest"></div>
+    <button class="big" id="btnAgain" type="button">Raise another pet</button>
+  </div>
+</div>
+
+<script>
+(function () {
+'use strict';
+var $ = function (s) { return document.querySelector(s); };
+
+/* ---------- tuning ---------- */
+var DAYS = 30, DAY_LEN = 24;          // 24 game seconds per day, 12 minutes per life at 1x
+var GOAL_V = 100000, GOAL_F = 10000;
+var V0 = 300, FR = 2500, F0 = 24, VR = 30000;
+var STAGES = [
+  { name: 'Lurker',   at: 0,    w: 12, h: 10 },
+  { name: 'Poster',   at: 500,  w: 14, h: 12 },
+  { name: 'Rising',   at: 2500, w: 16, h: 13 },
+  { name: 'Trending', at: 6000, w: 18, h: 15 }
+];
+var KEYS = ['views', 'follows', 'likes', 'comments', 'shares'];
+var FOODS = {
+  views:    { label: 'Views',    feeds: 'Belly',  cd: 3 },
+  follows:  { label: 'Follows',  feeds: 'Growth', cd: 7 },
+  likes:    { label: 'Likes',    feeds: 'Joy',    cd: 3 },
+  comments: { label: 'Comments', feeds: 'Health', cd: 6 },
+  shares:   { label: 'Shares',   feeds: 'Hype',   cd: 5 }
+};
+var CAP = { views: 6, follows: 4, likes: 5, comments: 3, shares: 4 };   // feeds allowed per day in Director mode
+var DIR_CD = 0.7, V0_DIR = 380, DIR_DECAY = { belly: 30, joy: 22, hype: 32 };
+var EGG_V = 50, EGG_L = 50, EGG_AMT = { views: 25, likes: 17 };   // egg hatches at 50 views and 50 likes
+var fmt = function (n) { return Math.round(n).toLocaleString('en-US'); };
+var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+function stageOf(f) { var s = 0; for (var i = 0; i < STAGES.length; i++) if (f >= STAGES[i].at) s = i; return s; }
+
+/* ---------- pixel icons ---------- */
+var LEG = { '#': '#2b2233', w: '#ffffff', b: '#4aa3ff', k: '#1b1b2f', r: '#ff5a7a', l: '#9ad8ff', y: '#ffd447', p: '#ffb38a', g: '#4ade80', o: '#ff9f43' };
+var ICON = {
+  views: ['..#####..', '.#wwwww#.', '#wwbbbww#', '#wwbkbww#', '#wwbbbww#', '.#wwwww#.', '..#####..'],
+  follows: ['..####......', '.#pppp#..g..', '.#pppp#.ggg.', '..####...g..', '.########...', '#pppppppp#..', '#pppppppp#..', '#pppppppp#..', '##########..'],
+  likes: ['.##...##.', '#rrr.rrr#', '#rwrrrrr#', '#rrrrrrr#', '.#rrrrr#.', '..#rrr#..', '...#r#...', '....#....'],
+  comments: ['.#######.', '#lllllll#', '#lklklkl#', '#lllllll#', '#lllllll#', '.#######.', '..#l#....', '...#.....'],
+  shares: ['.....#....', '.....##...', '.#####yy#.', '#yyyyyyyy#', '.#####yy#.', '.....##...', '.....#....']
+};
+function drawIcon(c, icon, x, y, s) {
+  for (var r = 0; r < icon.length; r++) for (var q = 0; q < icon[r].length; q++) {
+    var ch = icon[r][q]; if (ch === '.') continue;
+    c.fillStyle = LEG[ch]; c.fillRect(x + q * s, y + r * s, s, s);
+  }
+}
+function iconCanvas(cv, key) {
+  cv.width = 12; cv.height = 9;
+  var c = cv.getContext('2d'), ic = ICON[key];
+  drawIcon(c, ic, (12 - ic[0].length) >> 1, (9 - ic.length) >> 1, 1);
+}
+
+/* ---------- build feed buttons and rules ---------- */
+var feedEl = $('#feed'), btns = {}, amts = {};
+KEYS.forEach(function (k, i) {
+  var b = document.createElement('button');
+  b.type = 'button'; b.className = 'food'; b.setAttribute('aria-label', 'Feed ' + FOODS[k].label);
+  b.innerHTML = '<canvas class="ico"></canvas><span class="fn">' + FOODS[k].label + '</span><span class="ff">' + FOODS[k].feeds + '</span><span class="cd"></span><span class="left" hidden></span>';
+  iconCanvas(b.querySelector('canvas'), k);
+  b.addEventListener('click', function () { feed(k); });
+  var a = document.createElement('div'); a.className = 'amt'; a.setAttribute('role', 'button'); a.tabIndex = 0; a.hidden = true;
+  a.setAttribute('aria-label', 'Set ' + FOODS[k].label + ' amount');
+  a.addEventListener('click', function () { editAmt(k); });
+  a.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && e.target === a) { e.preventDefault(); editAmt(k); } });
+  var w = document.createElement('div'); w.className = 'foodwrap'; w.appendChild(b); w.appendChild(a);
+  feedEl.appendChild(w); btns[k] = b; amts[k] = a;
+});
+var rulesEl = $('#rules');
+KEYS.forEach(function (k) {
+  var d = document.createElement('div'); d.className = 'rule';
+  d.innerHTML = '<canvas></canvas><span>' + FOODS[k].label + '</span><span>' + (k === 'follows' ? 'Growth and evolution' : 'Fills ' + FOODS[k].feeds) + '</span>';
+  iconCanvas(d.querySelector('canvas'), k);
+  rulesEl.appendChild(d);
+});
+
+/* ---------- state ---------- */
+var G = null, phase = 'intro', paused = false, speed = 1, anim = 0;
+var lastBanner = 0, bannerTimer = 0, recapOn = false;
+
+function newGame(name, mode) {
+  var r = Math.random;
+  return {
+    name: name, mode: mode || 'director', uses: Object.assign({}, CAP), boosts: 3, dayV: 0, dayF: 0, hatched: false, amt: { views: null, follows: null, likes: null, comments: null, shares: null }, t: 0, belly: 70, joy: 70, health: 100, hype: 40,
+    views: 0, follows: 0, likes: 0, comments: 0, shares: 0, dV: 0, dF: 0, stage: 0,
+    dead: false, creator: false, boostEnd: 0,
+    nextTroll: (4 + r() * 4) * DAY_LEN, nextBoost: (7 + r() * 5) * DAY_LEN,
+    cool: { views: 0, follows: 0, likes: 0, comments: 0, shares: 0 },
+    foods: [], parts: [], chew: 0, eatFood: null,
+    pet: { x: 120, y: 140, tx: 120, ty: 140, wait: 1 },
+    hT: 0, sT: 0, nodes: 0
+  };
+}
+G = newGame('Pip');
+
+function petState(g) {
+  if (g.dead) return 'dead';
+  if (!g.hatched) return 'egg';
+  if (g.health < 35) return 'sick';
+  if (g.belly < 30) return 'hungry';
+  if (g.joy < 30) return 'sad';
+  if (g.joy >= 60 && g.belly >= 50 && g.health >= 60) return 'happy';
+  return 'ok';
+}
+
+/* ---------- storage ---------- */
+function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+function getBest() { try { return JSON.parse(load('tiktokpet.best') || 'null'); } catch (e) { return null; } }
+
+/* ---------- popups and banners ---------- */
+var popsEl = $('#pops');
+function say(text, cls) {
+  var p = G.pet, el = document.createElement('span');
+  el.className = 'pop ' + (cls || ''); el.textContent = text;
+  var jitter = (Math.random() - 0.5) * 8;
+  el.style.left = clamp((p.x + jitter) / 240 * 100, 18, 82) + '%';
+  el.style.top = clamp((p.y - 52) / 180 * 100, 12, 90) + '%';
+  popsEl.appendChild(el);
+  setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 1600);
+}
+function banner(text, kind, ms) {
+  var b = $('#banner'); b.textContent = text; b.className = 'banner ' + (kind || ''); b.hidden = false;
+  clearTimeout(bannerTimer); bannerTimer = setTimeout(function () { b.hidden = true; }, ms || 3200);
+}
+
+/* ---------- particles ---------- */
+function addPart(type, x, y, vx, vy, life, col) { G.parts.push({ type: type, x: x, y: y, vx: vx, vy: vy, life: life, max: life, col: col }); }
+function hearts(n) { for (var i = 0; i < n; i++) addPart('heart', G.pet.x + (Math.random() - 0.5) * 22, G.pet.y - 30 - Math.random() * 8, (Math.random() - 0.5) * 8, -14 - Math.random() * 8, 1.3); }
+function sparks(n) { n = n || 8; for (var i = 0; i < n; i++) { var a = Math.random() * 6.28, s = 14 + Math.random() * 22; addPart('spark', G.pet.x, G.pet.y - 18, Math.cos(a) * s, Math.sin(a) * s - 8, 0.9); } }
+function crumbs(col) { for (var i = 0; i < 5; i++) addPart('crumb', G.pet.x + (Math.random() - 0.5) * 8, G.pet.y - 12, (Math.random() - 0.5) * 30, -12 - Math.random() * 18, 0.6, col); }
+function updateParts(dt) {
+  var keep = [];
+  for (var i = 0; i < G.parts.length; i++) {
+    var p = G.parts[i]; p.life -= dt; if (p.life <= 0) continue;
+    p.x += p.vx * dt; p.y += p.vy * dt; if (p.type === 'crumb') p.vy += 60 * dt;
+    keep.push(p);
+  }
+  G.parts = keep;
+}
+
+/* ---------- feeding ---------- */
+function isDir() { return G.mode === 'director'; }
+function feed(k) {
+  if (phase !== 'play' || paused || G.dead || recapOn) return;
+  if (G.cool[k] > 0) return;
+  if (G.foods.length >= 6) return;
+  if (!G.hatched && k !== 'views' && k !== 'likes') return;
+  var amt = isDir() ? G.amt[k] : null;
+  if (isDir() && !amt) { if (G.uses[k] <= 0) return; G.uses[k]--; }
+  G.cool[k] = isDir() ? DIR_CD : FOODS[k].cd;
+  dropFood(k, amt || null);
+}
+function dropFood(k, amt) {
+  var egg = !G.hatched;
+  G.foods.push({ type: k, amt: amt || null, x: egg ? 96 + Math.random() * 48 : 36 + Math.random() * 168, y: -10, ly: egg ? 132 + Math.random() * 14 : 114 + Math.random() * 52, vy: 40, landed: false });
+}
+
+function applyExact(k, amt) {
+  var g = G, n = amt || EGG_AMT[k] || 0, live = g.hatched;
+  if (!n) return;
+  if (k === 'views') { g.views += n; if (live) g.belly = Math.min(100, g.belly + clamp(n / 25, 2, 40)); say('+' + fmt(n) + ' views', 'v'); crumbs('#8cc8ff'); }
+  else if (k === 'follows') { g.follows += n; say('+' + fmt(n) + ' followers', 'f'); sparks(8); }
+  else if (k === 'likes') { g.likes += n; if (live) g.joy = Math.min(100, g.joy + clamp(n * 0.8, 2, 40)); say('+' + fmt(n) + ' likes', 'l'); hearts(4); }
+  else if (k === 'comments') { g.comments += n; if (live) g.health = Math.min(100, g.health + clamp(n * 5.5, 5, 40)); say('+' + fmt(n) + ' comments', 'c'); crumbs('#bdf5cf'); }
+  else if (k === 'shares') { g.shares += n; if (live) g.hype = Math.min(100, g.hype + clamp(n * 9, 5, 40)); say('+' + fmt(n) + ' shares', 's'); sparks(6); }
+}
+function hatch() {
+  var g = G; g.hatched = true; g.stage = stageOf(g.follows);
+  g.belly = 70; g.joy = 70; g.health = 100; g.hype = Math.max(g.hype, 40);
+  g.nextTroll = g.t + (4 + Math.random() * 4) * DAY_LEN; g.nextBoost = g.t + (7 + Math.random() * 5) * DAY_LEN;
+  sparks(26); hearts(6); crumbs('#fff1d0'); crumbs('#ffd447');
+  banner(g.name + ' hatched! Now keep it fed and happy.', 'good', 4200);
+}
+function applyFood(k, amt) {
+  if (amt || !G.hatched) { applyExact(k, amt); afterFeed(); return; }
+  var g = G, boost = g.t < g.boostEnd ? 1.5 : 1, reach = 1 + g.follows / FR, n;
+  if (k === 'views') {
+    if (g.belly >= 85) { g.health -= 10; say('Too full!', 'bad'); crumbs('#ff7a7a'); return; }
+    g.belly = Math.min(100, g.belly + 16);
+    n = Math.round((isDir() ? V0_DIR : V0) * (1 + g.hype / 100) * reach * boost); g.views += n; say('+' + fmt(n) + ' views', 'v'); crumbs('#8cc8ff');
+  } else if (k === 'follows') {
+    var m = Math.min(g.joy, g.belly);
+    n = Math.round(F0 * (1 + g.hype / 100) * (0.4 + 0.6 * m / 100) * (1 + g.views / VR) * boost); g.follows += n; say('+' + fmt(n) + ' followers', 'f'); sparks(8);
+  } else if (k === 'likes') {
+    if (g.joy >= 85) { g.health -= 8; say('Too hyped!', 'bad'); return; }
+    g.joy = Math.min(100, g.joy + 15); n = Math.round(18 * reach); g.likes += n; say('+' + fmt(n) + ' likes', 'l'); hearts(4);
+  } else if (k === 'comments') {
+    if (g.health >= 95) { if (isDir()) g.uses[k]++; say('Already healthy', 'dim'); return; }
+    g.health = Math.min(100, g.health + 22); n = Math.round(4 * reach); g.comments += n; say('+' + fmt(n) + ' comments', 'c'); crumbs('#bdf5cf');
+  } else if (k === 'shares') {
+    if (g.hype >= 95) { if (isDir()) g.uses[k]++; say('Maxed out', 'dim'); return; }
+    g.hype = Math.min(100, g.hype + 18); n = Math.round(2 * reach); g.shares += n; say('+' + fmt(n) + ' shares', 's'); sparks(6);
+  }
+  afterFeed();
+}
+function afterFeed() {
+  var g = G;
+  if (!g.hatched) { if (g.views >= EGG_V && g.likes >= EGG_L) hatch(); return; }
+  var st = stageOf(g.follows);
+  if (st > g.stage) { g.stage = st; banner(g.name + ' evolved into a ' + STAGES[st].name + '!', 'good'); sparks(16); }
+  if (!g.creator && g.views >= GOAL_V && g.follows >= GOAL_F) { g.creator = true; banner('Creator unlocked!', 'good', 4500); sparks(20); }
+}
+
+/* ---------- simulation ---------- */
+function movePet(dt, urgent) {
+  var p = G.pet, st = petState(G);
+  var sp = st === 'sick' ? 10 : st === 'happy' ? 34 : 24; if (urgent) sp *= 1.8;
+  var dx = p.tx - p.x, dy = p.ty - p.y, d = Math.hypot(dx, dy);
+  if (d > 1.5) { var m = Math.min(d, sp * dt); p.x += dx / d * m; p.y += dy / d * m; return false; }
+  return true;
+}
+function wander(dt) {
+  var p = G.pet;
+  if (movePet(dt, false)) {
+    p.wait -= dt;
+    if (p.wait <= 0) { p.tx = 34 + Math.random() * 172; p.ty = 112 + Math.random() * 56; p.wait = 1 + Math.random() * 2.5; }
+  }
+}
+function stepWorld(dt) {
+  var g = G, p = g.pet, i;
+  for (i = 0; i < g.foods.length; i++) {
+    var f = g.foods[i]; if (f.landed) continue;
+    f.vy += 260 * dt; f.y += f.vy * dt; if (f.y >= f.ly) { f.y = f.ly; f.landed = true; }
+  }
+  if (g.chew > 0) {
+    g.chew -= dt;
+    if (g.chew <= 0 && g.eatFood) {
+      var idx = g.foods.indexOf(g.eatFood); if (idx >= 0) g.foods.splice(idx, 1);
+      var k = g.eatFood.type, am = g.eatFood.amt; g.eatFood = null; applyFood(k, am);
+    }
+    return;
+  }
+  var target = null;
+  for (i = 0; i < g.foods.length; i++) if (g.foods[i].landed) { target = g.foods[i]; break; }
+  if (target) {
+    if (!g.hatched) { g.chew = 0.5; g.eatFood = target; return; }
+    p.tx = target.x; p.ty = target.y;
+    if (movePet(dt, true)) { g.chew = 0.9; g.eatFood = target; }
+  } else if (g.hatched) wander(dt);
+}
+function stepSim(dt) {
+  var g = G;
+  if (g.dead) { updateParts(dt); return; }
+  var dir = g.mode === 'director';
+  if (!dir) g.t += dt;
+  KEYS.forEach(function (k) { g.cool[k] = Math.max(0, g.cool[k] - dt); });
+  var d = (dir || !g.hatched) ? 0 : dt / DAY_LEN;
+  g.belly = Math.max(0, g.belly - 42 * d); g.joy = Math.max(0, g.joy - 30 * d); g.hype = Math.max(0, g.hype - 40 * d);
+  if (g.belly < 15) g.health -= 25 * d;
+  if (g.joy < 15) g.health -= 12 * d;
+  if (g.belly > 45 && g.joy > 45) g.health = Math.min(100, g.health + 8 * d);
+  if (!dir && g.hatched && g.t >= g.nextTroll) {
+    g.health -= 18; g.joy = Math.max(0, g.joy - 12); g.nextTroll = g.t + (5 + Math.random() * 5) * DAY_LEN;
+    banner('Troll comment! Health and joy drop. Feed comments.', 'bad'); say('Troll!', 'bad');
+  }
+  if (!dir && g.hatched && g.t >= g.nextBoost) {
+    g.boostEnd = g.t + DAY_LEN; g.nextBoost = g.t + (7 + Math.random() * 6) * DAY_LEN;
+    banner('Algorithm boost! Views and follows ×1.5 for one day.', 'good');
+  }
+  var st = petState(g);
+  g.hT -= dt; g.sT -= dt;
+  if (st === 'happy' && g.hT <= 0) { hearts(1); g.hT = 0.8; }
+  if (g.hype >= 60 && g.sT <= 0) { sparks(1); g.sT = 0.35; }
+  stepWorld(dt);
+  updateParts(dt);
+  if (g.health <= 0) { g.health = 0; die(); return; }
+  if (!dir && g.t >= DAYS * DAY_LEN) finish(false);
+}
+
+/* ---------- director controls ---------- */
+function dirReady() { return phase === 'play' && isDir() && !G.dead && !recapOn; }
+function nextDay() {
+  if (!dirReady() || G.chew > 0 || G.foods.length > 0) return;
+  var g = G, day = Math.min(DAYS, Math.floor(g.t / DAY_LEN) + 1);
+  if (day >= DAYS) { finish(false); return; }
+  var gv = g.views - g.dayV, gf = g.follows - g.dayF;
+  g.dayV = g.views; g.dayF = g.follows;
+  var notes = [];
+  if (g.hatched) {
+  g.belly = Math.max(0, g.belly - DIR_DECAY.belly); g.joy = Math.max(0, g.joy - DIR_DECAY.joy); g.hype = Math.max(0, g.hype - DIR_DECAY.hype);
+  var notes = [];
+  if (g.belly < 15) { g.health -= 25; notes.push('Starving'); }
+  if (g.joy < 15) { g.health -= 12; notes.push('Miserable'); }
+  if (g.belly > 45 && g.joy > 45) g.health = Math.min(100, g.health + 8);
+  }
+  g.t += DAY_LEN; g.foods = []; g.chew = 0; g.eatFood = null;
+  g.uses = Object.assign({}, CAP);
+  if (g.health <= 0) { g.health = 0; die(); return; }
+  recapOn = true;
+  $('#recapDay').textContent = 'DAY ' + (day + 1);
+  $('#recapGain').textContent = 'Yesterday: +' + fmt(gv) + ' views, +' + fmt(gf) + ' followers';
+  $('#recapMood').textContent = notes.length ? notes.join(' · ') : statusInfo(g)[1];
+  $('#recap').hidden = false;
+  setTimeout(function () { $('#recap').hidden = true; recapOn = false; }, 2200);
+}
+function dirTroll() {
+  if (!G.hatched) return;
+  if (!dirReady()) return;
+  G.health -= 18; G.joy = Math.max(0, G.joy - 12);
+  banner('Troll comment! Health and joy drop. Feed comments.', 'bad'); say('Troll!', 'bad');
+  if (G.health <= 0) { G.health = 0; die(); }
+}
+function dirBoost() {
+  if (!G.hatched) return;
+  if (!dirReady() || G.boosts <= 0 || G.t < G.boostEnd) return;
+  G.boosts--; G.boostEnd = G.t + DAY_LEN;
+  banner('Algorithm boost! Views and follows x1.5 for today.', 'good');
+}
+
+/* The number under each food. Tap it, type, press Enter or tap away. Nothing is fed until the food itself is tapped. */
+function shortNum(n) { return n >= 1000000 ? (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M' : n >= 10000 ? Math.round(n / 1000) + 'K' : n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, '') + 'K' : String(n); }
+function editAmt(k) {
+  if (!isDir() || amts[k].querySelector('input')) return;
+  var a = amts[k], inp = document.createElement('input'), done = false;
+  inp.type = 'number'; inp.inputMode = 'numeric'; inp.min = '1'; inp.max = '100000000'; inp.step = '1';
+  inp.className = 'amtin'; inp.id = 'amt-' + k; inp.placeholder = 'auto';
+  inp.setAttribute('aria-label', FOODS[k].label + ' amount, empty for auto');
+  if (G.amt[k]) inp.value = G.amt[k];
+  a.textContent = ''; a.appendChild(inp); a.classList.add('editing');
+  inp.focus(); inp.select();
+  function finishEdit(commit) {
+    if (done) return; done = true;
+    if (commit) { var v = Math.floor(Number(inp.value)); G.amt[k] = (inp.value !== '' && isFinite(v) && v >= 1) ? Math.min(v, 100000000) : null; }
+    a.classList.remove('editing'); a._t = null; a.textContent = '';
+  }
+  inp.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Enter') { finishEdit(true); } else if (e.key === 'Escape') { finishEdit(false); } });
+  inp.addEventListener('blur', function () { finishEdit(true); });
+}
+
+/* ---------- end of life ---------- */
+function die() {
+  G.dead = true; G.foods = []; G.chew = 0; G.eatFood = null; phase = 'dying';
+  banner(G.name + ' got too sick.', 'bad', 3000);
+  setTimeout(function () { finish(true); }, 2600);
+}
+function pct(v, goal) { return Math.min(100, v / goal * 100); }
+function finish(died) {
+  var g = G; phase = 'over';
+  var day = Math.min(DAYS, Math.floor(g.t / DAY_LEN) + 1);
+  var win = g.views >= GOAL_V && g.follows >= GOAL_F;
+  var title, text;
+  if (!g.hatched) { title = 'Still an egg'; text = g.name + ' never hatched. It needed 50 views and 50 likes.'; }
+  else if (died) { title = 'Gone too soon'; text = g.name + ' did not make it past day ' + day + '. Keep belly and joy up, and use comments to heal.'; }
+  else if (win) { title = g.name + ' is a Creator!'; text = 'Both goals reached within 30 days. That is the real thing.'; }
+  else if (g.views >= GOAL_V || g.follows >= GOAL_F) { title = 'So close'; text = g.name + ' hit one goal but not the other. Try a different balance next time.'; }
+  else { title = 'A quiet life'; text = g.name + ' lived all 30 days without reaching the creator goals. More shares means more hype, and hype multiplies everything.'; }
+  $('#endTitle').textContent = title; $('#endText').textContent = text;
+  $('#eV').textContent = fmt(g.views); $('#ePV').textContent = ' ' + Math.round(pct(g.views, GOAL_V)) + '% of goal';
+  $('#eF').textContent = fmt(g.follows); $('#ePF').textContent = ' ' + Math.round(pct(g.follows, GOAL_F)) + '% of goal';
+  $('#eVF').style.width = pct(g.views, GOAL_V) + '%'; $('#eFF').style.width = pct(g.follows, GOAL_F) + '%';
+  $('#eL').textContent = fmt(g.likes); $('#eC').textContent = fmt(g.comments); $('#eS').textContent = fmt(g.shares); $('#eD').textContent = died ? day : DAYS;
+  var best = getBest(), isBest = !best || g.views > best.views;
+  if (isBest) { best = { views: Math.round(g.views), follows: Math.round(g.follows), creator: win }; save('tiktokpet.best', JSON.stringify(best)); }
+  $('#endBest').textContent = isBest ? 'New best run.' : 'Best run: ' + fmt(best.views) + ' views, ' + fmt(best.follows) + ' followers.';
+  var c = $('#endPet').getContext('2d'); c.clearRect(0, 0, 24, 28);
+  var cv = $('#endPet'); cv.width = 96; cv.height = 112; c = cv.getContext('2d');
+  c.fillStyle = '#9ad6ee'; c.fillRect(0, 0, 96, 78); c.fillStyle = '#64b95b'; c.fillRect(0, 78, 96, 34);
+  if (!g.hatched) drawEgg(c, 48, 102, 0, 4, eggProg(g), 0); else if (died) drawGrave(c, 48, 100, 0, 2); else drawPet(c, 48, 102, { stage: g.stage, state: win ? 'happy' : 'ok', t: 0, c: 4, creator: win, hype: win ? 100 : 0, chew: 0 });
+  $('#banner').hidden = true;
+  $('#endModal').hidden = false;
+}
+
+/* ---------- drawing: farm ---------- */
+var cv = $('#farm'), ctx = cv.getContext('2d');
+var bg = document.createElement('canvas'); bg.width = 240; bg.height = 180;
+function R(c, x, y, w, h, col) { c.fillStyle = col; c.fillRect(x, y, w, h); }
+function disc(c, cx, cy, r, col) { for (var dy = -r; dy <= r; dy++) { var dx = Math.floor(Math.sqrt(r * r - dy * dy)); R(c, cx - dx, cy + dy, dx * 2 + 1, 1, col); } }
+function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function buildFarm() {
+  var b = bg.getContext('2d'), rnd = mulberry(7), x, y, k;
+  R(b, 0, 0, 240, 22, '#69c0ea'); R(b, 0, 22, 240, 20, '#88cff0'); R(b, 0, 42, 240, 40, '#acdff3');
+  for (x = 0; x < 240; x++) { y = Math.round(58 - (5 + 5 * Math.sin(x / 30 + 1) + 3 * Math.sin(x / 9))); R(b, x, y, 1, 40, '#86c47e'); }
+  for (x = 0; x < 240; x++) { y = Math.round(68 - (3 + 3 * Math.sin(x / 22 + 3) + 2 * Math.sin(x / 7 + 1))); R(b, x, y, 1, 40, '#6cb766'); }
+  var sy = 74, i = 0, bh = 6; while (sy < 180) { R(b, 0, sy, 240, bh, i % 2 ? '#59ad53' : '#64b95b'); sy += bh; bh++; i++; }
+  // barn
+  var bx = 18, by = 46;
+  R(b, bx, by, 36, 24, '#b8392b'); R(b, bx, by, 36, 2, '#8f2a20');
+  for (k = 4; k < 36; k += 6) R(b, bx + k, by + 2, 1, 22, '#a53226');
+  for (var r = 0; r < 12; r++) { var half = 5 + Math.round(r * 1.5); R(b, bx + 18 - half, by - 12 + r, half * 2, 1, r < 2 ? '#4f3522' : '#6b4630'); }
+  R(b, bx - 3, by - 1, 42, 2, '#f4ead0');
+  R(b, bx + 12, by + 8, 12, 16, '#f4ead0'); R(b, bx + 13, by + 9, 10, 15, '#8f2a20');
+  for (k = 0; k < 10; k++) { R(b, bx + 13 + k, by + 9 + Math.round(k * 1.4), 1, 1, '#f4ead0'); R(b, bx + 22 - k, by + 9 + Math.round(k * 1.4), 1, 1, '#f4ead0'); }
+  R(b, bx + 15, by - 7, 6, 5, '#3b2716'); R(b, bx + 17, by - 7, 2, 5, '#f4ead0');
+  // windmill tower
+  for (k = 0; k < 26; k++) { var hw = 3 + Math.floor(k / 6); R(b, 196 - hw, 44 + k, hw * 2, 1, k % 2 ? '#e9dbb8' : '#dccb9f'); }
+  R(b, 194, 66, 4, 4, '#6b4630');
+  // fence
+  R(b, 0, 75, 240, 1, '#f3e3bd'); R(b, 0, 79, 240, 1, '#f3e3bd');
+  for (x = 2; x < 240; x += 10) R(b, x, 72, 2, 11, '#d9c08a');
+  R(b, 0, 83, 240, 1, '#4f9b49');
+  // trees
+  [14, 226].forEach(function (cx) {
+    R(b, cx - 3, 98, 6, 20, '#6b4630'); R(b, cx + 1, 98, 2, 20, '#563620');
+    disc(b, cx, 88, 13, '#3f9a47'); disc(b, cx - 6, 94, 8, '#3f9a47'); disc(b, cx + 6, 94, 8, '#3f9a47');
+    disc(b, cx - 4, 83, 5, '#58b25a');
+  });
+  // tufts and flowers
+  for (k = 0; k < 70; k++) { x = Math.floor(rnd() * 236); y = 90 + Math.floor(rnd() * 88); R(b, x, y, 1, 2, '#4c9a49'); R(b, x + 2, y + 1, 1, 1, '#4c9a49'); }
+  var fc = ['#fff1d0', '#ff8fa8', '#ffd447', '#b69bff'];
+  for (k = 0; k < 16; k++) { x = 30 + Math.floor(rnd() * 180); y = 100 + Math.floor(rnd() * 76); R(b, x, y, 2, 2, fc[k % 4]); R(b, x, y + 2, 1, 1, '#3f8a3f'); }
+}
+buildFarm();
+
+var CLOUDS = [{ x: 20, y: 10, s: 1 }, { x: 120, y: 24, s: 0.7 }, { x: 190, y: 6, s: 1.2 }];
+function drawCloud(x, y) { ctx.fillStyle = 'rgba(255,255,255,.92)'; ctx.fillRect(x + 4, y, 12, 2); ctx.fillRect(x, y + 2, 20, 2); ctx.fillRect(x + 2, y + 4, 16, 2); }
+function drawBlades() {
+  var cx = 196, cy = 44, a0 = anim * 0.9, k, j;
+  for (j = 0; j < 4; j++) {
+    var a = a0 + j * Math.PI / 2;
+    for (k = 2; k <= 15; k++) {
+      var x = Math.round(cx + Math.cos(a) * k), y = Math.round(cy + Math.sin(a) * k);
+      ctx.fillStyle = '#f6f0e0'; ctx.fillRect(x, y, 1, 1);
+      if (k > 5) { ctx.fillStyle = '#d9cfb6'; ctx.fillRect(Math.round(x - Math.sin(a)), Math.round(y + Math.cos(a)), 1, 1); }
+    }
+  }
+  ctx.fillStyle = '#6b4630'; ctx.fillRect(cx - 1, cy - 1, 3, 3);
+}
+
+/* ---------- drawing: pet ---------- */
+function drawPet(c, cx, fy, o) {
+  var C = o.c || 2, S = STAGES[o.stage], W = S.w, H = S.h, st = o.state, t = o.t || 0;
+  var H2 = st === 'hungry' ? H - 1 : H;
+  var bob = 0;
+  if (st === 'happy') bob = -Math.abs(Math.sin(t * 7)) * 1.5 * C;
+  else if (st === 'ok') bob = -Math.abs(Math.sin(t * 3)) * 0.5 * C;
+  if (o.chew > 0) bob = -Math.abs(Math.sin(t * 16)) * 0.5 * C;
+  var shake = st === 'sick' ? Math.round(Math.sin(t * 30)) : 0;
+  var ox = Math.round(cx - W * C / 2) + shake, oy = Math.round(fy - H2 * C + bob);
+  function p(gx, gy, w, h, col) { c.fillStyle = col; c.fillRect(ox + gx * C, oy + gy * C, w * C, h * C); }
+  var sick = st === 'sick';
+  var BODY = sick ? '#a9c987' : '#ff8a6b', BELLY = sick ? '#dbe9c2' : '#ffd3bd', LINE = '#3a1f2b', EARIN = sick ? '#c5dba8' : '#ffb3a1';
+  var cxg = W / 2, i, hw, rows = [];
+  // shadow
+  c.fillStyle = 'rgba(0,0,0,.22)'; c.fillRect(Math.round(cx - W * C * 0.45), Math.round(fy - C * 0.5), Math.round(W * C * 0.9), Math.max(2, C));
+  // aura
+  if (o.hype >= 60) { c.fillStyle = 'rgba(255,212,71,.18)'; c.fillRect(ox - 2 * C, oy - 2 * C, (W + 4) * C, (H2 + 4) * C); }
+  // ears
+  p(1, -3, 5, 4, LINE); p(W - 6, -3, 5, 4, LINE);
+  p(2, -2, 3, 3, BODY); p(W - 5, -2, 3, 3, BODY); p(3, -1, 1, 2, EARIN); p(W - 4, -1, 1, 2, EARIN);
+  // body outline then fill
+  for (i = 0; i < H2; i++) { hw = Math.round(Math.sqrt(Math.max(0, 1 - Math.pow((i + 0.5 - H2 / 2) / (H2 / 2), 2))) * W / 2); rows.push(hw); }
+  for (i = 0; i < H2; i++) {
+    hw = rows[i]; p(cxg - hw - 1, i, hw * 2 + 2, 1, LINE);
+    if (i === 0) p(cxg - hw, -1, hw * 2, 1, LINE);
+    if (i === H2 - 1) p(cxg - hw, i + 1, hw * 2, 1, LINE);
+  }
+  for (i = 0; i < H2; i++) { hw = rows[i]; p(cxg - hw, i, hw * 2, 1, BODY); }
+  for (i = Math.floor(H2 * 0.55); i < H2 - 1; i++) { hw = Math.max(1, rows[i] - 3); p(cxg - hw, i, hw * 2, 1, BELLY); }
+  // face
+  var ey = Math.round(H2 * 0.36), my = Math.round(H2 * 0.64), blink = (t % 3.4) < 0.12;
+  var shades = o.stage >= 2 && st !== 'sick' && st !== 'dead';
+  if (!shades) {
+    if (st === 'happy' || o.chew > 0) {
+      p(cxg - 5, ey + 1, 1, 1, LINE); p(cxg - 4, ey, 1, 1, LINE); p(cxg - 3, ey + 1, 1, 1, LINE);
+      p(cxg + 2, ey + 1, 1, 1, LINE); p(cxg + 3, ey, 1, 1, LINE); p(cxg + 4, ey + 1, 1, 1, LINE);
+    } else if (sick) {
+      [[cxg - 4], [cxg + 2]].forEach(function (a) { var x = a[0]; p(x, ey, 1, 1, LINE); p(x + 2, ey, 1, 1, LINE); p(x + 1, ey + 1, 1, 1, LINE); p(x, ey + 2, 1, 1, LINE); p(x + 2, ey + 2, 1, 1, LINE); });
+    } else if (blink) { p(cxg - 4, ey + 1, 2, 1, LINE); p(cxg + 2, ey + 1, 2, 1, LINE); }
+    else {
+      p(cxg - 4, ey, 2, 3, LINE); p(cxg + 2, ey, 2, 3, LINE); p(cxg - 4, ey, 1, 1, '#fff'); p(cxg + 2, ey, 1, 1, '#fff');
+      if (st === 'sad') p(cxg - 4, ey + 3, 1, 2, '#7fd1ff');
+    }
+  } else {
+    p(cxg - 5, ey - 1, 10, 3, '#14121f'); p(cxg - 4, ey - 1, 2, 1, '#6b6a8f'); p(cxg + 1, ey - 1, 2, 1, '#6b6a8f');
+  }
+  if (st === 'happy') { p(cxg - 6, my - 1, 2, 1, '#ff7a90'); p(cxg + 4, my - 1, 2, 1, '#ff7a90'); }
+  // mouth
+  if (o.chew > 0) {
+    if (Math.sin(t * 16) > 0) p(cxg - 1, my, 2, 2, LINE); else p(cxg - 1, my + 1, 2, 1, LINE);
+  } else if (st === 'happy') { p(cxg - 2, my, 1, 1, LINE); p(cxg - 1, my + 1, 2, 1, LINE); p(cxg + 1, my, 1, 1, LINE); }
+  else if (st === 'hungry') {
+    var open = Math.sin(t * 5) > -0.2; if (open) { p(cxg - 1, my, 2, 2, LINE); p(cxg - 1, my + 1, 2, 1, '#ff6b8b'); }
+    p(cxg + 1, my + 2, 1, 2, '#9ad8ff');
+  } else if (sick) { p(cxg - 2, my + 1, 1, 1, LINE); p(cxg - 1, my, 1, 1, LINE); p(cxg, my + 1, 1, 1, LINE); p(cxg + 1, my, 1, 1, LINE); p(cxg + 1, my + 1, 4, 1, '#ffffff'); p(cxg + 5, my + 1, 1, 1, '#ff4d4d'); if (Math.sin(t * 4) > 0) p(W - 3, ey - 2, 1, 2, '#7fd1ff'); }
+  else if (st === 'sad') { p(cxg - 2, my + 1, 1, 1, LINE); p(cxg - 1, my, 2, 1, LINE); p(cxg + 1, my + 1, 1, 1, LINE); }
+  else { p(cxg - 1, my, 2, 1, LINE); }
+  // headphones
+  if (o.stage >= 1) {
+    p(-1, -4, W + 2, 1, '#2d2a3e'); p(-1, -4, 1, ey + 5, '#2d2a3e'); p(W, -4, 1, ey + 5, '#2d2a3e');
+    p(-2, ey - 1, 2, 4, '#2d2a3e'); p(W, ey - 1, 2, 4, '#2d2a3e'); p(-2, ey, 1, 2, '#ffd447'); p(W + 1, ey, 1, 2, '#ffd447');
+  }
+  // crown
+  if (o.creator) {
+    p(cxg - 3, -6, 6, 2, '#ffd447'); p(cxg - 3, -8, 2, 2, '#ffd447'); p(cxg - 1, -9, 2, 3, '#ffd447'); p(cxg + 1, -8, 2, 2, '#ffd447'); p(cxg - 3, -5, 6, 1, '#d99a1c');
+  }
+}
+function drawGrave(c, cx, fy, t, C) {
+  C = C || 1; var w = 14 * C, h = 18 * C, x = Math.round(cx - w / 2), y = fy - h;
+  c.fillStyle = 'rgba(0,0,0,.22)'; c.fillRect(x - C, fy - C, w + 2 * C, 2 * C);
+  c.fillStyle = '#2c2c38'; c.fillRect(x - C, y + 2 * C, w + 2 * C, h - 2 * C); c.fillRect(x + 2 * C, y - C, w - 4 * C, 3 * C);
+  c.fillStyle = '#9a9cae'; c.fillRect(x, y + 3 * C, w, h - 3 * C); c.fillRect(x + 3 * C, y, w - 6 * C, 3 * C);
+  c.fillStyle = '#6f7186'; c.fillRect(x + 6 * C, y + 5 * C, 2 * C, 8 * C); c.fillRect(x + 3 * C, y + 8 * C, 8 * C, 2 * C);
+  var gy = y - 16 * C + Math.sin(t * 2) * 2 * C, gx = Math.round(cx - 5 * C);
+  c.globalAlpha = 0.85; c.fillStyle = '#eaf6ff';
+  c.fillRect(gx + 2 * C, gy, 6 * C, 2 * C); c.fillRect(gx, gy + 2 * C, 10 * C, 8 * C);
+  c.fillRect(gx, gy + 10 * C, 2 * C, 2 * C); c.fillRect(gx + 4 * C, gy + 10 * C, 2 * C, 2 * C); c.fillRect(gx + 8 * C, gy + 10 * C, 2 * C, 2 * C);
+  c.globalAlpha = 1; c.fillStyle = '#2b2233'; c.fillRect(gx + 2 * C, gy + 4 * C, 2 * C, 2 * C); c.fillRect(gx + 6 * C, gy + 4 * C, 2 * C, 2 * C); c.fillRect(gx + 4 * C, gy + 7 * C, 2 * C, 2 * C);
+}
+function eggProg(g) { return Math.min(1, g.views / EGG_V) / 2 + Math.min(1, g.likes / EGG_L) / 2; }
+var CRACK = [[0, 6], [1, 7], [0, 8], [-1, 9], [0, 10], [1, 11], [2, 12], [1, 13], [0, 14]];
+function drawEgg(c, cx, fy, t, C, prog, chew) {
+  var W = 14, H = 18, i, hw, mid = W / 2;
+  var wob = prog > 0.5 ? Math.sin(t * (6 + prog * 8)) * (prog - 0.4) * 2 : 0;
+  var bob = chew > 0 ? -Math.abs(Math.sin(t * 14)) * C : 0;
+  var ox = Math.round(cx - W * C / 2 + wob * C * 0.5), oy = Math.round(fy - H * C + bob);
+  function p(gx, gy, w, h, col) { c.fillStyle = col; c.fillRect(ox + gx * C, oy + gy * C, w * C, h * C); }
+  c.fillStyle = 'rgba(0,0,0,.22)'; c.fillRect(Math.round(cx - W * C * 0.45), Math.round(fy - C * 0.5), Math.round(W * C * 0.9), Math.max(2, C));
+  if (prog > 0.8) { c.fillStyle = 'rgba(255,212,71,.22)'; c.fillRect(ox - 2 * C, oy - 2 * C, (W + 4) * C, (H + 4) * C); }
+  var rows = [];
+  for (i = 0; i < H; i++) { var u = (i + 0.5 - H / 2) / (H / 2); rows.push(Math.max(1, Math.round(Math.sqrt(Math.max(0, 1 - u * u)) * (W / 2) * (0.78 + 0.22 * i / H)))); }
+  for (i = 0; i < H; i++) { hw = rows[i]; p(mid - hw - 1, i, hw * 2 + 2, 1, '#3a1f2b'); }
+  p(mid - rows[0], -1, rows[0] * 2, 1, '#3a1f2b'); p(mid - rows[H - 1], H, rows[H - 1] * 2, 1, '#3a1f2b');
+  for (i = 0; i < H; i++) { hw = rows[i]; p(mid - hw, i, hw * 2, 1, '#fff1d0'); p(mid + hw - 2, i, 2, 1, '#ecd5a4'); }
+  p(mid - 3, 5, 2, 2, '#ff8a6b'); p(mid + 1, 9, 3, 2, '#ffd447'); p(mid - 4, 12, 2, 2, '#ffd447'); p(mid + 2, 4, 1, 1, '#ff8a6b');
+  p(mid - 3, 2, 2, 1, '#ffffff');
+  var cn = Math.floor(prog * 10); if (cn > 9) cn = 9;
+  for (i = 0; i < cn; i++) p(mid + CRACK[i][0], CRACK[i][1], 1, 1, '#3a1f2b');
+}
+var HEART = ['##.##', '#####', '.###.', '..#..'];
+function drawParts() {
+  for (var i = 0; i < G.parts.length; i++) {
+    var p = G.parts[i], a = Math.min(1, p.life / 0.3); ctx.globalAlpha = a;
+    var x = Math.round(p.x), y = Math.round(p.y);
+    if (p.type === 'heart') { ctx.fillStyle = '#ff5a7a'; for (var r = 0; r < 4; r++) for (var q = 0; q < 5; q++) if (HEART[r][q] === '#') ctx.fillRect(x + q, y + r, 1, 1); }
+    else if (p.type === 'spark') { ctx.fillStyle = '#ffe680'; ctx.fillRect(x, y - 1, 1, 3); ctx.fillRect(x - 1, y, 3, 1); }
+    else { ctx.fillStyle = p.col || '#fff'; ctx.fillRect(x, y, 2, 2); }
+  }
+  ctx.globalAlpha = 1;
+}
+function drawBubble(g, st) {
+  var key = st === 'hungry' ? 'views' : st === 'sad' ? 'likes' : st === 'sick' ? 'comments' : null;
+  if (!key) return;
+  var S = STAGES[g.stage], p = g.pet, top = p.y - S.h * 2 - 18 + Math.sin(anim * 4) * 1.5;
+  var x = Math.round(p.x - 9), y = Math.round(top - 14);
+  ctx.fillStyle = '#2b2233'; ctx.fillRect(x - 1, y - 1, 20, 17); ctx.fillRect(x + 7, y + 16, 4, 3);
+  ctx.fillStyle = '#fff'; ctx.fillRect(x, y, 18, 15); ctx.fillRect(x + 8, y + 15, 2, 2);
+  var ic = ICON[key]; drawIcon(ctx, ic, x + 9 - Math.floor(ic[0].length / 2), y + 7 - Math.floor(ic.length / 2), 1);
+}
+function drawFoods(g) {
+  g.foods.forEach(function (f) {
+    var bobY = f.landed ? Math.sin(anim * 5 + f.x) * 1 : 0;
+    if (f.landed) { ctx.fillStyle = 'rgba(0,0,0,.2)'; ctx.fillRect(Math.round(f.x - 7), Math.round(f.y + 1), 14, 2); }
+    var ic = ICON[f.type];
+    drawIcon(ctx, ic, Math.round(f.x - ic[0].length), Math.round(f.y - ic.length * 2 - 2 + bobY), 2);
+  });
+}
+
+function render() {
+  var g = G, i;
+  ctx.drawImage(bg, 0, 0);
+  for (i = 0; i < CLOUDS.length; i++) { var cl = CLOUDS[i]; drawCloud(Math.round(((cl.x + anim * 2 * cl.s) % 290) - 30), cl.y); }
+  drawBlades();
+  drawFoods(g);
+  var st = petState(g), p = g.pet;
+  if (g.dead) drawGrave(ctx, Math.round(p.x), Math.round(p.y), anim, 1);
+  else {
+    if (!g.hatched) drawEgg(ctx, p.x, p.y, anim, 2, eggProg(g), g.chew);
+    else drawPet(ctx, p.x, p.y, { stage: g.stage, state: st, t: anim, c: 2, creator: g.creator, hype: g.hype, chew: g.chew });
+    if (phase === 'play' && g.hatched) drawBubble(g, st);
+  }
+  drawParts();
+  var ph = (g.t % DAY_LEN) / DAY_LEN, al = 0;
+  if ((phase === 'play' || phase === 'dying' || phase === 'over') && g.mode !== 'director') {
+    if (ph < 0.04) al = 0.22 * (1 - ph / 0.04); else if (ph > 0.78) al = 0.34 * ((ph - 0.78) / 0.22);
+  }
+  if (al > 0) { ctx.fillStyle = 'rgba(22,26,84,' + al.toFixed(3) + ')'; ctx.fillRect(0, 0, 240, 180); }
+}
+
+/* ---------- HUD ---------- */
+var cache = {};
+function setText(id, v) { if (cache[id] !== v) { cache[id] = v; $('#' + id).textContent = v; } }
+function setW(id, v) { var k = id + 'w'; v = Math.round(v * 10) / 10; if (cache[k] !== v) { cache[k] = v; $('#' + id).style.width = v + '%'; } }
+function setBar(id, v) { var el = $('#' + id), i = el.querySelector('i'); var k = id + 'w'; v = Math.round(v); if (cache[k] !== v) { cache[k] = v; i.style.width = v + '%'; el.classList.toggle('low', v < 30); } }
+function statusInfo(g) {
+  var st = petState(g), n = g.name;
+  if (phase === 'intro') return ['', n + ' is waiting to hatch'];
+  if (st === 'egg') return ['', n + ' is still an egg'];
+  if (st === 'dead') return ['bad', n + ' is gone'];
+  if (st === 'sick') return ['bad', n + ' is sick. Feed comments'];
+  if (st === 'hungry') return ['bad', n + ' is hungry. Feed views'];
+  if (st === 'sad') return ['sad', n + ' is sad. Feed likes'];
+  if (st === 'happy') return ['good', n + ' is happy'];
+  return ['', n + ' is doing okay'];
+}
+function hud(dt) {
+  var g = G, day = Math.min(DAYS, Math.floor(g.t / DAY_LEN) + 1);
+  g.dV += (g.views - g.dV) * Math.min(1, dt * 8); g.dF += (g.follows - g.dF) * Math.min(1, dt * 8);
+  if (Math.abs(g.views - g.dV) < 1) g.dV = g.views; if (Math.abs(g.follows - g.dF) < 1) g.dF = g.follows;
+  setText('dayLabel', 'Day ' + day + ' / ' + DAYS);
+  setText('stageLabel', !g.hatched ? 'Egg' : STAGES[g.stage].name + (g.creator ? ' · Creator' : ''));
+  setW('dayFill', Math.min(100, g.t / (DAYS * DAY_LEN) * 100));
+  setText('vNow', fmt(g.dV)); setText('fNow', fmt(g.dF));
+  setW('vFill', pct(g.dV, GOAL_V)); setW('fFill', pct(g.dF, GOAL_F));
+  setText('fNext', !g.hatched ? 'Hatch the egg first: 50 views and 50 likes' : g.stage < STAGES.length - 1 ? 'Next evolution: ' + STAGES[g.stage + 1].name + ' at ' + fmt(STAGES[g.stage + 1].at) + ' followers' : 'Top evolution reached. Keep climbing to 10,000.');
+  setBar('vbBelly', g.belly); setBar('vbJoy', g.joy); setBar('vbHealth', g.health); setBar('vbHype', g.hype);
+  KEYS.forEach(function (k) {
+    var dirm = g.mode === 'director', b = btns[k];
+    var cd = g.cool[k] / (dirm ? DIR_CD : FOODS[k].cd) * 100, locked = !g.hatched && k !== 'views' && k !== 'likes', empty = locked || (dirm && !g.amt[k] && g.uses[k] <= 0);
+    b.style.setProperty('--cd', (empty ? 100 : cd).toFixed(0) + '%'); b.classList.toggle('cooling', cd > 0 || empty);
+    var lt = locked ? 'LOCK' : (dirm && !g.amt[k]) ? String(g.uses[k]) : '';
+    if (b._lt !== lt) { b._lt = lt; var le = b.querySelector('.left'); le.textContent = lt; le.hidden = !lt; }
+    var ac = amts[k]; ac.hidden = !dirm;
+    if (dirm && !ac.classList.contains('editing')) { var at = g.amt[k] ? '+' + shortNum(g.amt[k]) : 'auto'; if (ac._t !== at) { ac._t = at; ac.textContent = at; } }
+  });
+  var s = statusInfo(g), el = $('#status');
+  if (cache.sCls !== s[0]) { cache.sCls = s[0]; el.className = 'status ' + s[0]; }
+  setText('statusText', s[1]);
+  setText('btnNext', g.foods.length > 0 ? 'Eating...' : day >= DAYS ? 'End the life' : 'Next day');
+  setText('btnBoost', 'Boost (' + g.boosts + ')');
+  $('#btnNext').disabled = recapOn || g.foods.length > 0; $('#btnTroll').disabled = recapOn || !g.hatched;
+  var egg = !g.hatched;
+  if (cache.egg !== egg) { cache.egg = egg; $('#hatchBox').hidden = !egg; $('#vitalsBox').hidden = egg; }
+  setW('hvFill', pct(g.views, EGG_V)); setW('hlFill', pct(g.likes, EGG_L));
+  setText('hvNum', fmt(Math.min(g.views, EGG_V)) + '/' + EGG_V); setText('hlNum', fmt(Math.min(g.likes, EGG_L)) + '/' + EGG_L);
+  $('#btnBoost').disabled = recapOn || !g.hatched || g.boosts <= 0 || g.t < g.boostEnd;
+  var boosted = phase === 'play' && g.t < g.boostEnd;
+  if (cache.boost !== boosted) { cache.boost = boosted; $('#boostTag').hidden = !boosted; }
+}
+
+/* ---------- loop ---------- */
+var last = 0;
+function loop(now) {
+  var dt = Math.min(0.1, (now - last) / 1000 || 0); last = now;
+  if (!paused) anim += dt;
+  if (!paused) {
+    if (phase === 'play') {
+      var left = dt * (G.mode === 'director' ? 1 : speed);
+      while (left > 0 && phase === 'play') { var s = Math.min(0.1, left); stepSim(s); left -= s; }
+    } else if (phase === 'intro') { if (G.hatched) wander(dt); }
+    else if (phase === 'dying') { updateParts(dt); }
+  }
+  render(); hud(dt);
+  requestAnimationFrame(loop);
+}
+
+/* ---------- controls ---------- */
+function setPaused(v) {
+  if (G.mode === 'director') return;
+  if (phase !== 'play') return;
+  paused = v; $('#btnPause').textContent = v ? 'Resume' : 'Pause'; $('#pausedTag').hidden = !v;
+}
+$('#btnPause').addEventListener('click', function () { setPaused(!paused); });
+$('#btnSpeed').addEventListener('click', function () {
+  speed = speed === 1 ? 2 : speed === 2 ? 4 : 1; this.textContent = speed + '×';
+});
+document.addEventListener('visibilitychange', function () { if (document.hidden && phase === 'play') setPaused(true); });
+document.addEventListener('keydown', function (e) {
+  if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT')) return;
+  if (e.key >= '1' && e.key <= '5') { feed(KEYS[+e.key - 1]); }
+  else if (e.key === 'n' || e.key === 'N') { nextDay(); }
+  else if (e.key === ' ' && phase === 'play') { e.preventDefault(); setPaused(!paused); }
+});
+
+var curMode = load('tiktokpet.mode') === 'live' ? 'live' : 'director';
+function setMode(m, persist) {
+  curMode = m; if (persist) save('tiktokpet.mode', m);
+  var dir = m === 'director';
+  document.querySelectorAll('.segb').forEach(function (b) { b.setAttribute('aria-checked', String(b.getAttribute('data-mode') === m)); });
+  $('#modeHint').textContent = dir ? 'You decide when each day ends. Built for recording videos. Each food has a daily limit.' : 'Days pass on their own: 24 seconds each, about 12 minutes per life.';
+  $('#directorBox').hidden = !dir; $('#btnSpeed').hidden = dir; $('#btnPause').hidden = dir;
+  $('#hint').textContent = dir ? 'Tap a food to feed it. Tap the number under a food to type your own amount; empty means auto. Typed amounts skip the daily limit. Tap Next day when the scene is done.' : 'Tap a food. Your pet walks over and eats it. Keys 1 to 5 also work.';
+  G.mode = m;
+}
+$('#btnNext').addEventListener('click', nextDay);
+$('#btnTroll').addEventListener('click', dirTroll);
+$('#btnBoost').addEventListener('click', dirBoost);
+document.querySelectorAll('.segb').forEach(function (b) { b.addEventListener('click', function () { setMode(b.getAttribute('data-mode'), true); }); });
+
+function showStart() {
+  var best = getBest(), bl = $('#bestLine');
+  if (best) { bl.hidden = false; bl.textContent = 'Best run: ' + fmt(best.views) + ' views, ' + fmt(best.follows) + ' followers' + (best.creator ? ' · Creator' : ''); }
+  var nm = load('tiktokpet.name'); if (nm) $('#petName').value = nm;
+  G = newGame($('#petName').value.trim() || 'Pip', curMode); phase = 'intro'; paused = false; setMode(curMode, false);
+  $('#nameChip').textContent = G.name; $('#pausedTag').hidden = true; $('#btnPause').textContent = 'Pause';
+  $('#startModal').hidden = false; $('#endModal').hidden = true;
+}
+function startGame() {
+  var name = ($('#petName').value.trim() || 'Pip').slice(0, 12);
+  save('tiktokpet.name', name);
+  G = newGame(name, curMode); phase = 'play'; paused = false; setMode(curMode, false);
+  $('#nameChip').textContent = name; $('#startModal').hidden = true; $('#pausedTag').hidden = true;
+  banner(name + "'s egg needs " + EGG_V + ' views and ' + EGG_L + ' likes to hatch.', '', 3600);
+}
+$('#btnStart').addEventListener('click', startGame);
+$('#petName').addEventListener('keydown', function (e) { if (e.key === 'Enter') startGame(); });
+$('#petName').addEventListener('input', function () { $('#nameChip').textContent = this.value.trim() || 'Pip'; G.name = this.value.trim() || 'Pip'; });
+$('#btnAgain').addEventListener('click', showStart);
+
+showStart();
+requestAnimationFrame(loop);
+})();
+</script>
+
+</body></html>
